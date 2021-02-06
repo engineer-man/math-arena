@@ -7,7 +7,7 @@ const CODE_PING = 'ping';
 const CODE_PLAYER_STATE = 'player_state';
 
 // input codes
-const CODE_MOVEMENT = 'ping';
+const CODE_MOVEMENT = 'movement';
 
 const wss = new ws.Server({ port: config.ports.gateway });
 const rpub = new ioredis(6379, 'redis');
@@ -22,7 +22,16 @@ const state = {
 
         }
     }
-}
+};
+
+let loop = set_interval(() => {
+    rpub.publish('game1', JSON.stringify({
+        op: CODE_PLAYER_STATE,
+        payload: {
+            players: state.game1.players
+        }
+    }));
+}, 100);
 
 wss.on('connection', socket => {
     socket.uuid = uuid.v4().split('-')[0];
@@ -43,22 +52,13 @@ wss.on('connection', socket => {
 
     console.log(socket.uuid);
 
-    let loop = set_interval(() => {
-        rpub.publish('game1', JSON.stringify({
-            op: CODE_PLAYER_STATE,
-            payload: {
-                players: state.game1.players
-            }
-        }));
-    }, 100);
-
-    // publish all messages to the right game uuid
+    // process messages
     socket.on('message', message => {
 
     });
 
     socket.on('close', () => {
-        clear_interval(loop);
+        rsub.unsubscribe('game1');
         delete state.game1.players[socket.uuid];
     });
 
@@ -66,15 +66,10 @@ wss.on('connection', socket => {
         socket.alive = true;
     });
 
-    // process messages
-    rsub.on('message', (channel, message) => {
-        socket.send(message);
-    });
-
     // subscribe to game updates
     rsub.subscribe('game1');
     rsub.on('message', (channel, message) => {
-
+        socket.send(message);
     });
 });
 
