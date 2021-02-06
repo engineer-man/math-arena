@@ -1,0 +1,29 @@
+version: '3'
+services:
+    app:
+        container_name: matharena_app
+        image: node:14.4.0
+        ports:
+            - "2018:8001"
+            - "2019:8002"
+        volumes:
+            - ./:/opt/src
+        command: bash -c 'cd /opt/src && npm install && npm start'
+        environment:
+            APPENV: ${APPENV}
+    # mysql:
+    #     container_name: matharena_mysql
+    #     image: mysql:8.0
+    #     environment:
+    #         MYSQL_ROOT_PASSWORD: root
+    #         MYSQL_DATABASE: testdb
+    #     command: --init-file /var/lib/init/sample_schema.sql
+    #     volumes:
+    #         - ./:/opt/src
+    #         - ./var/docker/mysql:/var/lib/mysql
+    #         - ./var/sample_schema.sql:/var/lib/init/sample_schema.sql
+    redis:
+        container_name: matharena_redis
+        image: redis:5.0.3
+        volumes:
+            - ./var/docker/redis:/data

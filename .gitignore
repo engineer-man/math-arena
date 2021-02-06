@@ -1,0 +1,10 @@
+package-lock.json
+node_modules
+var/docker/mysql/*
+!var/docker/mysql/.gitkeep
+var/docker/redis/*
+!var/docker/redis/.gitkeep
+public/lib/main.bundle.js
+public/lib/main.bundle.css
+.env
+config.js
