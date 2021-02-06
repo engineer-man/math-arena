@@ -1,9 +1,9 @@
 ## math arena
 
 *game premise*
-this game is intended to be a competitive math game. players are balls which can move around a map and find
-larger circles to trigger an equation to appear on the screen. players must quickly solve the equation to gain points.
-players who don't solve it quick enough run the risk of being knocked out. the person with the highest score when
+this game is intended to be a competitive math game. Players are circles which can move around a map and find
+larger circles to trigger an equation to appear on the screen. Players must quickly solve the equation to gain points.
+Players who don't solve it quick enough run the risk of being knocked out. The person with the highest score when
 being knocked out is added to the leaderboard.
 
 * game instance is player capped, maybe 20?
