@@ -19,7 +19,7 @@ class Arena extends React.Component {
         this.state = {
             ping: '0ms',
             uuid: null,
-            name: 'unknown',
+            name: null,
             field: {
                 x: 2000,
                 y: 2000,

@@ -22,8 +22,7 @@ const rpub = new ioredis(6379, 'redis');
 
 const state = {
     game1: {
-        players: {},
-        problems: {}
+        players: {}
     }
 };
 
