@@ -5,6 +5,7 @@ class Gateway {
 
     constructor() {
         this.connected = false;
+        this.restart_auto = true;
         this.callbacks = [];
     }
 
@@ -15,6 +16,11 @@ class Gateway {
         this.connection.onmessage = this.on_message.bind(this);
         this.connection.onclose = this.on_close.bind(this);
         this.connection.onerror = this.on_error.bind(this);
+    }
+
+    stop() {
+        this.restart_auto = false;
+        this.connection.close();
     }
 
     on_open() {
@@ -33,6 +39,11 @@ class Gateway {
         this.connected = false;
 
         console.log('gateway closed');
+
+        if (!this.restart_auto) {
+            this.restart_auto = true;
+            return;
+        }
 
         setTimeout(() => {
             console.log('gateway reconnecting');

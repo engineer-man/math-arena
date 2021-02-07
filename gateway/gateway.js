@@ -5,8 +5,8 @@ const uuid = require('uuid');
 let clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 // config
-const FIELD_MAX_WIDTH = 1000;
-const FIELD_MAX_HEIGHT = 1000;
+const FIELD_MAX_WIDTH = 4000;
+const FIELD_MAX_HEIGHT = 4000;
 
 // output codes
 const CODE_PING = 'ping';
@@ -15,6 +15,7 @@ const CODE_PLAYER_STATE = 'player_state';
 
 // input codes
 const CODE_MOVEMENT = 'movement';
+const CODE_SET_NAME = 'set_name';
 
 const wss = new ws.Server({ port: config.ports.gateway });
 const rpub = new ioredis(6379, 'redis');
@@ -63,8 +64,8 @@ wss.on('connection', socket => {
         uuid: socket.uuid,
         name: 'unknown',
         pos: {
-            x: 500.0,
-            y: 500.0,
+            x: 2000,
+            y: 2000,
         },
         input: {
             up: 0,
@@ -86,11 +87,18 @@ wss.on('connection', socket => {
         try {
             message = JSON.parse(message);
 
+            let player = state.game1.players[socket.uuid];
+
             switch (message.code) {
                 case 'movement':
                     let { pressed, dir } = message.payload;
 
-                    state.game1.players[socket.uuid].input[dir] = pressed;
+                    player.input[dir] = pressed;
+                    break;
+                case 'set_name':
+                    let { name } = message.payload;
+
+                    player.name = name;
                     break;
             }
         } catch (e) {

@@ -21,8 +21,8 @@ class Arena extends React.Component {
             uuid: null,
             name: 'unknown',
             field: {
-                x: 250,
-                y: 250,
+                x: 2000,
+                y: 2000,
             },
             players: {}
         };
@@ -35,6 +35,10 @@ class Arena extends React.Component {
         this.process_feed();
 
         this.refs.arena.focus();
+    }
+
+    componentWillUnmount() {
+        this.gateway.stop();
     }
 
     process_feed() {
@@ -55,6 +59,12 @@ class Arena extends React.Component {
                 case 'register':
                     this.setState({
                         uuid: payload.uuid
+                    });
+                    this.gateway.send({
+                        code: 'set_name',
+                        payload: {
+                            name: this.props.name.substring(0, 16)
+                        }
                     });
                     break;
                 case 'player_state':
@@ -123,8 +133,8 @@ class Arena extends React.Component {
 
                 <div class="ping">{this.state.ping}</div>
                 <div class="player-local">
-                    <div class="name">{this.state.name}</div>
-                    <div class="points">14321</div>
+                    <div class="name">{this.props.name}</div>
+                    <div class="points">0</div>
                 </div>
                 <div
                     class="field"
@@ -132,7 +142,7 @@ class Arena extends React.Component {
                         top: `calc(50% - ${this.state.field.y}px)`,
                         left: `calc(50% - ${this.state.field.x}px)`,
                     }}>
-                    <div class="players-remote">
+                    <div class="players">
                         {Object.keys(this.state.players).map(key => {
                             let player = this.state.players[key];
 
@@ -145,12 +155,12 @@ class Arena extends React.Component {
                                     key={player.uuid}
                                     class="player-remote"
                                     style={{
-                                        top: `calc(${(player.pos.y / 1000) * 100}% - 40px)`,
-                                        left: `calc(${(player.pos.x / 1000) * 100}% - 40px)`,
+                                        top: `calc(${(player.pos.y / 4000) * 100}% - 40px)`,
+                                        left: `calc(${(player.pos.x / 4000) * 100}% - 40px)`,
                                     }}>
 
                                     <div class="name">{player.name}</div>
-                                    <div class="points">14321</div>
+                                    <div class="points">0</div>
                                 </div>
                             );
                         })}

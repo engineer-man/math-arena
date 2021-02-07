@@ -13,11 +13,17 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            name: localStorage.getItem('name') || ''
+        };
+
+        this.update_name = this.update_name.bind(this);
     }
 
-    componentDidMount() {
-
+    update_name(e) {
+        this.setState({
+            name: e.target.value
+        });
     }
 
     render() {
@@ -25,10 +31,13 @@ class Game extends React.Component {
             <Router>
                 <Switch>
                     <Route path="/arena">
-                        <Arena />
+                        <Arena
+                            name={this.state.name} />
                     </Route>
                     <Route path="/">
-                        <Landing />
+                        <Landing
+                            name={this.state.name}
+                            update_name={this.update_name} />
                     </Route>
                 </Switch>
             </Router>

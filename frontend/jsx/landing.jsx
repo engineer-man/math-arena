@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { withRouter as WithRouter } from 'react-router-dom';
 import axios from 'axios';
 
 class Landing extends React.Component {
@@ -10,10 +11,17 @@ class Landing extends React.Component {
         this.state = {
 
         };
+
+        this.detect_start = this.detect_start.bind(this);
     }
 
-    componentDidMount() {
+    detect_start(e) {
+        let code = e.which || e.keyCode;
 
+        if (code === 13) {
+            localStorage.setItem('name', this.props.name);
+            this.props.history.push('/arena');
+        }
     }
 
     render() {
@@ -22,7 +30,13 @@ class Landing extends React.Component {
                 <div class="register">
                     <div class="logo">Math Arena</div>
                     <div class="name">
-                        <input type="text" class="form-control" placeholder="Enter your name" />
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Enter your name and hit Enter"
+                            value={this.props.name}
+                            onChange={this.props.update_name}
+                            onKeyUp={this.detect_start} />
                     </div>
                 </div>
             </div>
@@ -31,4 +45,4 @@ class Landing extends React.Component {
 
 }
 
-export default Landing;
+export default WithRouter(Landing);
