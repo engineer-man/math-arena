@@ -19,10 +19,12 @@ class Arena extends React.Component {
         this.state = {
             ping: '0ms',
             uuid: null,
+            name: 'unknown',
             field: {
                 x: 250,
                 y: 250,
-            }
+            },
+            players: {}
         };
 
         this.process_feed = this.process_feed.bind(this);
@@ -64,7 +66,8 @@ class Arena extends React.Component {
                         field: {
                             x: payload.players[this.state.uuid].pos.x,
                             y: payload.players[this.state.uuid].pos.y,
-                        }
+                        },
+                        players: payload.players
                     });
                     break;
             }
@@ -120,7 +123,7 @@ class Arena extends React.Component {
 
                 <div class="ping">{this.state.ping}</div>
                 <div class="player-local">
-                    <div class="name">engineerman</div>
+                    <div class="name">{this.state.name}</div>
                     <div class="points">14321</div>
                 </div>
                 <div
@@ -129,7 +132,29 @@ class Arena extends React.Component {
                         top: `calc(50% - ${this.state.field.y}px)`,
                         left: `calc(50% - ${this.state.field.x}px)`,
                     }}>
-                    <div class="players-remote"></div>
+                    <div class="players-remote">
+                        {Object.keys(this.state.players).map(key => {
+                            let player = this.state.players[key];
+
+                            if (player.uuid === this.state.uuid) {
+                                return null;
+                            }
+
+                            return (
+                                <div
+                                    key={player.uuid}
+                                    class="player-remote"
+                                    style={{
+                                        top: `calc(${(player.pos.y / 1000) * 100}% - 40px)`,
+                                        left: `calc(${(player.pos.x / 1000) * 100}% - 40px)`,
+                                    }}>
+
+                                    <div class="name">{player.name}</div>
+                                    <div class="points">14321</div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         )

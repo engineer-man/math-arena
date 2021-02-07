@@ -13,7 +13,8 @@
         left: 2px;
     }
 
-    .player-local {
+    .player-local,
+    .player-remote {
         position: absolute;
         top: calc(50% - 40px);
         left: calc(50% - 40px);
@@ -22,6 +23,7 @@
         background: #fff;
         border-radius: 50%;
         z-index: 1;
+        transition: all .1s;
 
         .name {
             position: absolute;

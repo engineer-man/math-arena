@@ -18,7 +18,6 @@ const CODE_MOVEMENT = 'movement';
 
 const wss = new ws.Server({ port: config.ports.gateway });
 const rpub = new ioredis(6379, 'redis');
-const rsub = new ioredis(6379, 'redis');
 
 const state = {
     game1: {
@@ -27,7 +26,8 @@ const state = {
     }
 };
 
-let loop = set_interval(() => {
+// handle game ticks, approx 20/sec
+set_interval(() => {
     // adjust positioning
     for (let player in state.game1.players) {
         player = state.game1.players[player];
@@ -43,10 +43,9 @@ let loop = set_interval(() => {
 
         player.pos.x = clamp(player.pos.x, 0, FIELD_MAX_WIDTH);
         player.pos.y = clamp(player.pos.y, 0, FIELD_MAX_HEIGHT);
-
-        console.log(player);
     }
 
+    // publish current player positions to all connected clients
     rpub.publish('game1', JSON.stringify({
         code: CODE_PLAYER_STATE,
         payload: {
@@ -56,6 +55,8 @@ let loop = set_interval(() => {
 }, 50);
 
 wss.on('connection', socket => {
+    const rsub = new ioredis(6379, 'redis');
+
     socket.uuid = uuid.v4().split('-')[0];
 
     state.game1.players[socket.uuid] = {
@@ -98,7 +99,7 @@ wss.on('connection', socket => {
     });
 
     socket.on('close', () => {
-        rsub.unsubscribe('game1');
+        rsub.disconnect();
         delete state.game1.players[socket.uuid];
     });
 
