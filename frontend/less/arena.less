@@ -4,6 +4,8 @@
     left: 0;
     right: 0;
     bottom: 0;
+    overflow: hidden;
+    background: #111a29;
 
     .ping {
         position: absolute;
@@ -48,9 +50,11 @@
         position: absolute;
         top: calc(50%);
         left: calc(50%);
-        width: 500px;
-        height: 500px;
+        width: 1000px;
+        height: 1000px;
         border: #566F9D 1px solid;
-        background: url(/images/hex.png) center center;
+        background-image: url(/images/hex.png);
+        background-color: #334B78;
+        transition: all .1s;
     }
 }

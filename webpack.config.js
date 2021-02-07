@@ -1,4 +1,6 @@
 const path = require('path');
+const config = require('./config');
+const { DefinePlugin } = require('webpack');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -48,6 +50,13 @@ module.exports = {
     plugins: [
         new MiniCSSExtractPlugin({
             filename: '[name].bundle.css'
+        }),
+        new DefinePlugin({
+            'process.config': {
+                environment: JSON.stringify(config.environment),
+                ports: JSON.stringify(config.ports),
+                urls: JSON.stringify(config.urls),
+            }
         })
     ]
 };

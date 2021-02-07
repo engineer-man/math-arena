@@ -4,11 +4,12 @@ import ReactDOM from 'react-dom';
 class Gateway {
 
     constructor() {
+        this.connected = false;
         this.callbacks = [];
     }
 
     start() {
-        this.connection = new WebSocket('ws://127.0.0.1:2019');
+        this.connection = new WebSocket(process.config.urls.gateway);
 
         this.connection.onopen = this.on_open.bind(this);
         this.connection.onmessage = this.on_message.bind(this);
@@ -17,6 +18,8 @@ class Gateway {
     }
 
     on_open() {
+        this.connected = true;
+
         console.log('gateway ready');
     }
 
@@ -27,6 +30,8 @@ class Gateway {
     }
 
     on_close() {
+        this.connected = false;
+
         console.log('gateway closed');
 
         setTimeout(() => {
@@ -37,6 +42,14 @@ class Gateway {
 
     on_error(error) {
         throw new Error(error);
+    }
+
+    send(data) {
+        if (!this.connected) {
+            return;
+        }
+
+        this.connection.send(JSON.stringify(data));
     }
 
     feed(callback) {

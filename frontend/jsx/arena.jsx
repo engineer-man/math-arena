@@ -9,8 +9,20 @@ class Arena extends React.Component {
     constructor(props) {
         super(props);
 
+        this.controls = {
+            up: 0,
+            left: 0,
+            down: 0,
+            right: 0
+        };
+
         this.state = {
-            ping: '0ms'
+            ping: '0ms',
+            uuid: null,
+            field: {
+                x: 250,
+                y: 250,
+            }
         };
 
         this.process_feed = this.process_feed.bind(this);
@@ -19,34 +31,57 @@ class Arena extends React.Component {
 
     componentDidMount() {
         this.process_feed();
+
+        this.refs.arena.focus();
     }
 
     process_feed() {
         this.gateway = new gateway();
-        this.gateway.start();
 
         this.gateway.feed(msg => {
             let data = JSON.parse(msg);
+            let { code, payload } = data;
 
             console.log(msg);
 
-            switch (data.code) {
+            switch (code) {
                 case 'ping':
                     this.setState({
-                        ping: data.payload.ping
+                        ping: payload.ping
+                    });
+                    break;
+                case 'register':
+                    this.setState({
+                        uuid: payload.uuid
+                    });
+                    break;
+                case 'player_state':
+                    if (!payload.players[this.state.uuid]) {
+                        break;
+                    }
+
+                    this.setState({
+                        field: {
+                            x: payload.players[this.state.uuid].pos.x,
+                            y: payload.players[this.state.uuid].pos.y,
+                        }
                     });
                     break;
             }
         });
+
+        this.gateway.start();
     }
 
     handle_keys(e, type) {
         let key = e.which || e.keyCode;
 
-        let payload = {};
+        let payload = {
+            pressed: type === 'down' ? 1 : 0
+        };
 
         switch (key) {
-            case 67: // w
+            case 87: // w
                 payload.dir = 'up';
                 break;
             case 65: // a
@@ -62,13 +97,23 @@ class Arena extends React.Component {
                 return;
         }
 
-        console.log(key);
+        if (this.controls[payload.dir] === payload.pressed) {
+            return;
+        }
+
+        this.controls[payload.dir] = payload.pressed;
+
+        this.gateway.send({
+            code: 'movement',
+            payload
+        });
     }
 
     render() {
         return (
             <div
                 class="ma-arena"
+                ref="arena"
                 tabIndex={-1}
                 onKeyDown={() => this.handle_keys(event, 'down')}
                 onKeyUp={() => this.handle_keys(event, 'up')}>
@@ -78,7 +123,12 @@ class Arena extends React.Component {
                     <div class="name">engineerman</div>
                     <div class="points">14321</div>
                 </div>
-                <div class="field">
+                <div
+                    class="field"
+                    style={{
+                        top: `calc(50% - ${this.state.field.y}px)`,
+                        left: `calc(50% - ${this.state.field.x}px)`,
+                    }}>
                     <div class="players-remote"></div>
                 </div>
             </div>

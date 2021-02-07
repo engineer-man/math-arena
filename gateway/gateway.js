@@ -2,8 +2,15 @@ const ws = require('ws');
 const ioredis = require('ioredis');
 const uuid = require('uuid');
 
+let clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+// config
+const FIELD_MAX_WIDTH = 1000;
+const FIELD_MAX_HEIGHT = 1000;
+
 // output codes
 const CODE_PING = 'ping';
+const CODE_REGISTER = 'register';
 const CODE_PLAYER_STATE = 'player_state';
 
 // input codes
@@ -15,46 +22,79 @@ const rsub = new ioredis(6379, 'redis');
 
 const state = {
     game1: {
-        players: {
-
-        },
-        problems: {
-
-        }
+        players: {},
+        problems: {}
     }
 };
 
 let loop = set_interval(() => {
+    // adjust positioning
+    for (let player in state.game1.players) {
+        player = state.game1.players[player];
+
+        if (player.input.up)
+            player.pos.y -= 12;
+        if (player.input.down)
+            player.pos.y += 12;
+        if (player.input.left)
+            player.pos.x -= 12;
+        if (player.input.right)
+            player.pos.x += 12;
+
+        player.pos.x = clamp(player.pos.x, 0, FIELD_MAX_WIDTH);
+        player.pos.y = clamp(player.pos.y, 0, FIELD_MAX_HEIGHT);
+
+        console.log(player);
+    }
+
     rpub.publish('game1', JSON.stringify({
-        op: CODE_PLAYER_STATE,
+        code: CODE_PLAYER_STATE,
         payload: {
             players: state.game1.players
         }
     }));
-}, 100);
+}, 50);
 
 wss.on('connection', socket => {
     socket.uuid = uuid.v4().split('-')[0];
 
     state.game1.players[socket.uuid] = {
+        uuid: socket.uuid,
         name: 'unknown',
         pos: {
-            x: 250.0,
-            y: 250.0
+            x: 500.0,
+            y: 500.0,
         },
         input: {
-            top: 0,
+            up: 0,
+            left: 0,
+            down: 0,
             right: 0,
-            bottom: 0,
-            left: 0
         }
     };
 
-    console.log(socket.uuid);
+    socket.send(JSON.stringify({
+        code: CODE_REGISTER,
+        payload: {
+            uuid: socket.uuid
+        }
+    }));
 
     // process messages
     socket.on('message', message => {
+        try {
+            message = JSON.parse(message);
 
+            switch (message.code) {
+                case 'movement':
+                    let { pressed, dir } = message.payload;
+
+                    state.game1.players[socket.uuid].input[dir] = pressed;
+                    break;
+            }
+        } catch (e) {
+            // invalid json
+        }
     });
 
     socket.on('close', () => {
