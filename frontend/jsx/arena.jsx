@@ -155,8 +155,8 @@ class Arena extends React.Component {
                                     key={player.uuid}
                                     class="player-remote"
                                     style={{
-                                        top: `calc(${(player.pos.y / 4000) * 100}% - 40px)`,
-                                        left: `calc(${(player.pos.x / 4000) * 100}% - 40px)`,
+                                        top: `calc(${player.pos.y/40}% - 40px)`,
+                                        left: `calc(${player.pos.x / 40}% - 40px)`,
                                     }}>
 
                                     <div class="name">{player.name}</div>
