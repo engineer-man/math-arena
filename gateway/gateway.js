@@ -5,8 +5,8 @@ const uuid = require('uuid');
 let clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 // config
-const FIELD_MAX_WIDTH = 4000;
-const FIELD_MAX_HEIGHT = 4000;
+const FIELD_MAX_WIDTH = 2500;
+const FIELD_MAX_HEIGHT = 2500;
 
 // output codes
 const CODE_PING = 'ping';
@@ -33,17 +33,19 @@ set_interval(() => {
         player = state.game1.players[player];
 
         if (player.input.up)
-            player.pos.y -= 12;
+            player.pos.y -= 30;
         if (player.input.down)
-            player.pos.y += 12;
+            player.pos.y += 30;
         if (player.input.left)
-            player.pos.x -= 12;
+            player.pos.x -= 30;
         if (player.input.right)
-            player.pos.x += 12;
+            player.pos.x += 30;
 
         player.pos.x = clamp(player.pos.x, 0, FIELD_MAX_WIDTH);
         player.pos.y = clamp(player.pos.y, 0, FIELD_MAX_HEIGHT);
     }
+
+    console.log(JSON.stringify(state, null, 2));
 
     // publish current player positions to all connected clients
     rpub.publish('game1', JSON.stringify({
@@ -61,10 +63,11 @@ wss.on('connection', socket => {
 
     state.game1.players[socket.uuid] = {
         uuid: socket.uuid,
-        name: 'unknown',
+        name: '',
+        score: Math.floor(Math.random() * 30),
         pos: {
-            x: 2000,
-            y: 2000,
+            x: FIELD_MAX_WIDTH / 2,
+            y: FIELD_MAX_HEIGHT / 2,
         },
         input: {
             up: 0,

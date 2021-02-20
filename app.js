@@ -29,7 +29,11 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
+app.use((req, res, next) => {
+    res.locals.epoch = +new Date();
+    console.log('setting')
+    next();
+});
 app.use('/', routes);
 
 // start the app

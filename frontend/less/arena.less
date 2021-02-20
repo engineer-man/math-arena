@@ -9,9 +9,55 @@
 
     .ping {
         position: absolute;
-        top: 2px;
-        left: 2px;
+        top: 5px;
+        left: 5px;
         z-index: 2;
+        padding: 5px 10px;
+        border: #566F9D 1px solid;
+        background: rgba(15, 41, 113, .27);
+    }
+
+    .leaderboard {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 2;
+        width: 230px;
+        padding: 10px;
+        border: #566F9D 1px solid;
+        background: rgba(15, 41, 113, .27);
+        font-size: 14px;
+        .player {
+            display: flex;
+            .name {
+                flex: 1;
+            }
+            .score {
+                white-space: nowrap;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .minimap {
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+        z-index: 2;
+        width: 250px;
+        height: 250px;
+        border: #566F9D 1px solid;
+        background: rgb(39 64 113);
+        .player {
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: #5374af;
+            position: absolute;
+        }
+        .self {
+            background: #fff;
+        }
     }
 
     .player-local,
@@ -40,7 +86,7 @@
             white-space: nowrap;
         }
 
-        .points {
+        .score {
             position: absolute;
             color: #000;
             left: 0;
@@ -54,8 +100,8 @@
         position: absolute;
         top: calc(50%);
         left: calc(50%);
-        width: 4000px;
-        height: 4000px;
+        width: 2500px;
+        height: 2500px;
         border: #566F9D 1px solid;
         background-image: url(/images/hex.png);
         background-color: #334B78;

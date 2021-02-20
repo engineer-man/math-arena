@@ -19,12 +19,12 @@ class Arena extends React.Component {
         this.state = {
             ping: '0ms',
             uuid: null,
-            name: null,
             field: {
-                x: 2000,
-                y: 2000,
+                x: 1250,
+                y: 1250,
             },
-            players: {}
+            players: {},
+            self: {}
         };
 
         this.process_feed = this.process_feed.bind(this);
@@ -60,6 +60,7 @@ class Arena extends React.Component {
                     this.setState({
                         uuid: payload.uuid
                     });
+                    console.log('registering')
                     this.gateway.send({
                         code: 'set_name',
                         payload: {
@@ -77,7 +78,8 @@ class Arena extends React.Component {
                             x: payload.players[this.state.uuid].pos.x,
                             y: payload.players[this.state.uuid].pos.y,
                         },
-                        players: payload.players
+                        players: payload.players,
+                        self: payload.players[this.state.uuid]
                     });
                     break;
             }
@@ -94,16 +96,20 @@ class Arena extends React.Component {
         };
 
         switch (key) {
+            case 38: // up arrow
             case 87: // w
                 payload.dir = 'up';
                 break;
+            case 37: // left arrow
             case 65: // a
                 payload.dir = 'left';
                 break;
+            case 40: // down arrow
             case 83: // s
                 payload.dir = 'down';
                 break;
-            case 68: //
+            case 39: // right arrow
+            case 68: // d
                 payload.dir = 'right';
                 break;
             default:
@@ -123,6 +129,11 @@ class Arena extends React.Component {
     }
 
     render() {
+        const players = Object
+            .keys(this.state.players)
+            .map(key => this.state.players[key])
+            .sort((a, b) => a.score < b.score ? 1 : -1);
+
         return (
             <div
                 class="ma-arena"
@@ -132,10 +143,37 @@ class Arena extends React.Component {
                 onKeyUp={() => this.handle_keys(event, 'up')}>
 
                 <div class="ping">{this.state.ping}</div>
-                <div class="player-local">
-                    <div class="name">{this.props.name}</div>
-                    <div class="points">0</div>
+                <div class="leaderboard">
+                    <h5 class="f900">Leaderboard</h5>
+                    {players.map(player => {
+                        return (
+                            <div key={player.uuid} class="player">
+                                <div class="name">{player.name}</div>
+                                <div class="score">{player.score}</div>
+                            </div>
+                        );
+                    })}
                 </div>
+                <div class="minimap">
+                    {players.map(player => {
+                        return (
+                            <div
+                                key={player.uuid}
+                                class={'player ' + (player.uuid === this.state.uuid ? 'self' : '')}
+                                style={{
+                                    top: `calc(${(player.pos.y / 2500) * 100}% - 3px)`,
+                                    left: `calc(${(player.pos.x / 2500) * 100}% - 3px)`,
+                                }}>
+                            </div>
+                        );
+                    })}
+                </div>
+                {this.state.self && (
+                    <div class="player-local">
+                        <div class="name">{this.state.self.name}</div>
+                        <div class="score">{this.state.self.score}</div>
+                    </div>
+                )}
                 <div
                     class="field"
                     style={{
@@ -143,9 +181,7 @@ class Arena extends React.Component {
                         left: `calc(50% - ${this.state.field.x}px)`,
                     }}>
                     <div class="players">
-                        {Object.keys(this.state.players).map(key => {
-                            let player = this.state.players[key];
-
+                        {players.map(player => {
                             if (player.uuid === this.state.uuid) {
                                 return null;
                             }
@@ -155,12 +191,12 @@ class Arena extends React.Component {
                                     key={player.uuid}
                                     class="player-remote"
                                     style={{
-                                        top: `calc(${(player.pos.y / 4000) * 100}% - 40px)`,
-                                        left: `calc(${(player.pos.x / 4000) * 100}% - 40px)`,
+                                        top: `calc(${(player.pos.y / 2500) * 100}% - 40px)`,
+                                        left: `calc(${(player.pos.x / 2500) * 100}% - 40px)`,
                                     }}>
 
                                     <div class="name">{player.name}</div>
-                                    <div class="points">0</div>
+                                    <div class="score">{player.score}</div>
                                 </div>
                             );
                         })}
