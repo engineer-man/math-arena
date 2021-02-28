@@ -96,6 +96,29 @@
         }
     }
 
+    .problem {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        .background {
+            width: 300px;
+            height: 300px;
+            background: rgba(1, 115, 104, .39);
+            border-radius: 50%;
+            border: 4px dashed #7cccc4;
+            animation: rotate 8s linear infinite;
+            @-webkit-keyframes rotate {
+                from {
+                    -webkit-transform: rotate(0deg);
+                }
+                to {
+                    -webkit-transform: rotate(359.9deg);
+                }
+            }
+        }
+
+    }
+
     .field {
         position: absolute;
         top: calc(50%);

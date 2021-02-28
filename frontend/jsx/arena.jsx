@@ -140,6 +140,10 @@ class Arena extends React.Component {
             .map(key => this.state.players[key])
             .sort((a, b) => a.score < b.score ? 1 : -1);
 
+        const problems = Object
+            .keys(this.state.problems)
+            .map(key => this.state.problems[key]);
+
         return (
             <div
                 class="ma-arena"
@@ -186,6 +190,21 @@ class Arena extends React.Component {
                         top: `calc(50% - ${this.state.field.y}px)`,
                         left: `calc(50% - ${this.state.field.x}px)`,
                     }}>
+                    <div class="problems">
+                        {problems.map(problem => {
+                            return (
+                                <div
+                                    key={problem.uuid}
+                                    class="problem"
+                                    style={{
+                                        top: `calc(${(problem.pos.y / 2500) * 100}% - 150px)`,
+                                        left: `calc(${(problem.pos.x / 2500) * 100}% - 150px)`,
+                                    }}>
+                                    <div class="background"></div>
+                                </div>
+                            );
+                        })}
+                    </div>
                     <div class="players">
                         {players.map(player => {
                             if (player.uuid === this.state.uuid) {
