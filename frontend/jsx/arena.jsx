@@ -24,6 +24,7 @@ class Arena extends React.Component {
                 y: 1250,
             },
             players: {},
+            problems: {},
             self: {}
         };
 
@@ -80,6 +81,11 @@ class Arena extends React.Component {
                         },
                         players: payload.players,
                         self: payload.players[this.state.uuid]
+                    });
+                    break;
+                case 'problem_state':
+                    this.setState({
+                        problems: payload.problems
                     });
                     break;
             }

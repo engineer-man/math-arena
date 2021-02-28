@@ -12,6 +12,7 @@ const FIELD_MAX_HEIGHT = 2500;
 const CODE_PING = 'ping';
 const CODE_REGISTER = 'register';
 const CODE_PLAYER_STATE = 'player_state';
+const CODE_PROBLEM_STATE = 'problem_state';
 
 // input codes
 const CODE_MOVEMENT = 'movement';
@@ -22,7 +23,13 @@ const rpub = new ioredis(6379, 'redis');
 
 const state = {
     game1: {
-        players: {}
+        players: {},
+        problems: {
+            abcd: {
+                x: 1000,
+                y: 1000
+            }
+        }
     }
 };
 
@@ -77,10 +84,19 @@ wss.on('connection', socket => {
         }
     };
 
+    // send initial registration
     socket.send(JSON.stringify({
         code: CODE_REGISTER,
         payload: {
             uuid: socket.uuid
+        }
+    }));
+
+    // send initial list of problems on the map
+    socket.send(JSON.stringify({
+        code: CODE_PROBLEM_STATE,
+        payload: {
+            problems: state.game1.problems
         }
     }));
 
