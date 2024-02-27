@@ -103,7 +103,7 @@ set_interval(() => {
             problems: state.game1.problems
         }
     }));
-}, 250);
+}, 500);
 
 wss.on('connection', socket => {
     const rsub = new ioredis(6379, 'redis');

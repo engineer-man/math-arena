@@ -107,16 +107,15 @@
             border-radius: 50%;
             border: 4px dashed #7cccc4;
             animation: rotate 8s linear infinite;
-            @-webkit-keyframes rotate {
+            @keyframes rotate {
                 from {
-                    -webkit-transform: rotate(0deg);
+                    transform: rotate(0deg);
                 }
                 to {
-                    -webkit-transform: rotate(359.9deg);
+                    transform: rotate(359.9deg);
                 }
             }
         }
-
     }
 
     .field {
